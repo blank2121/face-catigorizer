@@ -1,4 +1,4 @@
-<center><h1>Face Recognition</h1></center>
+<h1 align="center">Face Recognition</h1>
 
 - save names to meta data in the car files: xmp files
 
