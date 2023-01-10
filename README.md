@@ -6,7 +6,7 @@
 # Current Status
 
 - takes in folder of reference images and "pickles" them
-- classifies inputted images of type jpg, jpeg, and png
+- classifies inputted images can be any file type
 
 ---
 # Next things to be added
@@ -20,5 +20,4 @@
 # Things to add later
 
 - save names to meta data in the car files: xmp files
-- accept all img file types
 - try to make some of the code in rust for speed
