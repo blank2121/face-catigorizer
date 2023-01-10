@@ -21,3 +21,4 @@
 
 - save names to meta data in the car files: xmp files
 - try to make some of the code in rust for speed
+- make the function that converts the images in rust because that step is very slow
