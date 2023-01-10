@@ -1,3 +1,5 @@
-ims/
+imgs/*
+
 ref.pickle
 student_ref/
+__pycache__/*
