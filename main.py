@@ -1,12 +1,11 @@
 import face_recognition as fr
-import cv2 as cv
+import cv2
 from tkinter import Tk
 from tkinter.filedialog import askdirectory
 from os import listdir
 from os.path import exists
 import pickle
-
-# defining functions
+import FaceFilter
 
 
 def pickle_dump(file_name: str, var) -> None:
@@ -36,10 +35,9 @@ def known_face_encoding(people: list[str], dir: str, end_info = True) -> list[st
             encoded_faces.append(target_encoding)
         return encoded_faces
 
-
 Tk().withdraw()
 
-# user prompting
+# user prompting and checking if the pickled file is there or not
 if exists("./ref.pickle"):
     inp = input("reference images already exist please enter, \"prompt\" to be prompted with the selection menu or just press enter/return to use the existing reference data.\n")
     if inp == "": pass
@@ -47,8 +45,11 @@ if exists("./ref.pickle"):
         dir = askdirectory()
         print(f"testing: {dir}")
         pic_list = listdir(dir)
+        
+        #ignoring dot files
         pic_list = [i for i in pic_list if i[0] != "."]
         pic_list.append(dir)
+        # function to make photos to jpg in temp file
         pickle_dump("ref",known_face_encoding(pic_list, dir))
         print("new reference images have been saved and properly encoded\n")
 else:
@@ -57,24 +58,25 @@ else:
     pic_list = listdir(dir)
     pic_list = [i for i in pic_list if i[0] != "."]
     pic_list.append(dir)
+    # function to make photos to jpg in temp file
     pickle_dump("ref",known_face_encoding(pic_list, dir))
     
 print("now please select the folder with the images you want to be classified by person\n")    
 
 # prompting user to select folder with pictures
 dir = askdirectory()
-pic_list = listdir(dir)
-pic_list = [i for i in pic_list if i[0] != "."]
+FaceFilter.img_to_classify_to_jpg(dir, "./temp")
+
+pic_list: list[str] = listdir("./temp")
+pic_list: list[str] = [i for i in pic_list if i[0] != "." and not i.endswith(".xmp")]
 
 #imgs = images to classify
-imgs: list[str] = known_face_encoding(pic_list, dir, end_info=False)
+imgs: list[str] = known_face_encoding(pic_list, "./temp", end_info=False)
 
 name_list = pickle_load("./ref")
-
 name_list = listdir(name_list[-1])
 ref_img = pickle_load("./ref")
 ref_img.pop(-1)
-
 
 for img in imgs:
     print([person[1] for person in enumerate(name_list) if fr.compare_faces(ref_img, img, 0.55)[person[0]]])
