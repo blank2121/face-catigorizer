@@ -24,15 +24,21 @@ def known_face_encoding(people: list[str], dir: str, end_info = True) -> list[st
         people.pop(-1)
         for img in people:
             target_img = fr.load_image_file(f"{dir}/{img}")
-            target_encoding = fr.face_encodings(target_img)[0]
-            encoded_faces.append(target_encoding)
+            target_encoding = fr.face_encodings(target_img)
+            if target_encoding == []:
+                encoded_faces.append([])
+                continue
+            encoded_faces.append(target_encoding[0])
         encoded_faces.append(last_elem)
         return encoded_faces
     else:
         for img in people:
             target_img = fr.load_image_file(f"{dir}/{img}")
-            target_encoding = fr.face_encodings(target_img)[0]
-            encoded_faces.append(target_encoding)
+            target_encoding = fr.face_encodings(target_img)
+            if target_encoding == []:
+                encoded_faces.append([])
+                continue
+            encoded_faces.append(target_encoding[0])
         return encoded_faces
 
 Tk().withdraw()
@@ -65,18 +71,38 @@ print("now please select the folder with the images you want to be classified by
 
 # prompting user to select folder with pictures
 dir = askdirectory()
+
+print("\n\n")
+print("starting the computation")
+print("\n\n")
+
+print("start convert to jpg\n\n")
+
 FaceFilter.img_to_classify_to_jpg(dir, "./temp")
+
+print("finished the jpg convertion\n\n")
 
 pic_list: list[str] = listdir("./temp")
 pic_list: list[str] = [i for i in pic_list if i[0] != "." and not i.endswith(".xmp")]
 
+print("finished making the pic_list\n\n")
+
+print(pic_list)
 #imgs = images to classify
 imgs: list[str] = known_face_encoding(pic_list, "./temp", end_info=False)
+
+print("finished encoding the images\n\n")
 
 name_list = pickle_load("./ref")
 name_list = listdir(name_list[-1])
 ref_img = pickle_load("./ref")
 ref_img.pop(-1)
 
-for img in imgs:
-    print([person[1] for person in enumerate(name_list) if fr.compare_faces(ref_img, img, 0.55)[person[0]]])
+print("starting the for loop\n\n")
+
+for idx, img in enumerate(imgs):
+    if img == []: continue
+    print(f"{pic_list[idx]} {[person[1] for person in enumerate(name_list) if fr.compare_faces(ref_img, img)[person[0]]]}")
+
+
+print("program finished\n\n")
